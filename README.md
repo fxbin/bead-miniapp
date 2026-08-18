@@ -17,16 +17,45 @@ Image → Resize → Color Processing → Brand Palette Mapping → Pattern Opti
 
 M0 — Bead Engine Baseline
 
-Focus on:
+The current baseline covers:
 
-- image preprocessing
-- palette modeling
-- perceptual color matching
-- bead grid generation
-- benchmark-driven optimization
+- image normalization and deterministic grid sampling
+- sRGB / CIELAB / OKLab color conversion
+- RGB / ΔE76 / CIEDE2000 / OKLab distance strategies
+- Artkal C-2.6mm official digital RGB palette registry
+- brand-palette matching
+- `generatePattern()` end-to-end output
+- unit tests and a lightweight benchmark harness
+
+## Development
+
+Requirements:
+
+- Node.js 22+
+- npm
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Run type checking and the test suite:
+
+```bash
+npm run check
+```
+
+Run tests only:
+
+```bash
+npm test
+```
+
+The Bead Engine lives under `miniprogram/engine` and must not depend on `wx.*`, `Page`, `Component`, or other WeChat runtime APIs.
 
 ## Repository principles
 
-- Code contains implementation and tests.
-- Design decisions and experiments are tracked in GitHub Issues.
-- The engine should avoid direct dependency on WeChat APIs.
+- Code contains implementation, tests, and only necessary operational documentation.
+- Design decisions, research, rejected alternatives, and experiments are tracked in GitHub Issues.
+- The engine should avoid direct dependency on WeChat APIs so it can be tested outside WeChat Developer Tools.
