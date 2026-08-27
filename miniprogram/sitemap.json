@@ -1,0 +1,21 @@
+{
+  "desc": "About the Bead Mini Program",
+  "sitemap": [
+    {
+      "action": "allow",
+      "page": "pages/index/index"
+    },
+    {
+      "action": "allow",
+      "page": "pages/generate/generate"
+    },
+    {
+      "action": "allow",
+      "page": "pages/preview/preview"
+    },
+    {
+      "action": "allow",
+      "page": "pages/export/export"
+    }
+  ]
+}

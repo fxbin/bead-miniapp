@@ -8,5 +8,5 @@
     "noEmit": true,
     "types": ["vitest/globals"]
   },
-  "include": ["miniprogram/**/*.ts", "tests/**/*.ts"]
+  "include": ["miniprogram/**/*.ts", "miniprogram/wx.d.ts", "tests/**/*.ts"]
 }

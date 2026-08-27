@@ -1,0 +1,27 @@
+.container {
+  padding: 20rpx;
+}
+
+.card {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+}
+
+.info-row {
+  font-size: 32rpx;
+  padding: 8rpx 0;
+}
+
+.btn-primary {
+  display: block;
+  background: #07c160;
+  color: #fff;
+  border-radius: 12rpx;
+  padding: 24rpx;
+  font-size: 34rpx;
+  text-align: center;
+  text-decoration: none;
+}

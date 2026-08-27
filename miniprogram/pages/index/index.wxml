@@ -1,0 +1,35 @@
+<view class="container">
+  <view class="card">
+    <view class="title">拼豆图纸生成器</view>
+    <view class="subtitle">照片本地处理，无需上传服务器</view>
+  </view>
+
+  <view class="card">
+    <view class="feature-row">
+      <text class="feature-icon">📷</text>
+      <text class="feature-text">选择图片</text>
+    </view>
+    <view class="feature-row">
+      <text class="feature-icon">🎨</text>
+      <text class="feature-text">生成拼豆图纸</text>
+    </view>
+    <view class="feature-row">
+      <text class="feature-icon">📋</text>
+      <text class="feature-text">查看色号与数量</text>
+    </view>
+    <view class="feature-row">
+      <text class="feature-icon">💾</text>
+      <text class="feature-text">保存图纸</text>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="privacy-note">
+      🔒 您的照片仅在本设备上处理，不会上传到任何服务器。
+    </view>
+  </view>
+
+  <navigator url="/pages/generate/generate" class="btn-primary">
+    开始制作
+  </navigator>
+</view>

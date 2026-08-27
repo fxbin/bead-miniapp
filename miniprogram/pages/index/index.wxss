@@ -1,0 +1,58 @@
+.container {
+  padding: 20rpx;
+}
+
+.card {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 32rpx 24rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+}
+
+.title {
+  font-size: 44rpx;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 12rpx;
+}
+
+.subtitle {
+  font-size: 28rpx;
+  color: #888;
+  text-align: center;
+}
+
+.feature-row {
+  display: flex;
+  align-items: center;
+  padding: 16rpx 0;
+}
+
+.feature-icon {
+  font-size: 40rpx;
+  margin-right: 20rpx;
+}
+
+.feature-text {
+  font-size: 32rpx;
+  color: #333;
+}
+
+.privacy-note {
+  font-size: 26rpx;
+  color: #888;
+  text-align: center;
+  line-height: 1.6;
+}
+
+.btn-primary {
+  display: block;
+  background: #07c160;
+  color: #fff;
+  border-radius: 12rpx;
+  padding: 24rpx;
+  font-size: 34rpx;
+  text-align: center;
+  text-decoration: none;
+}

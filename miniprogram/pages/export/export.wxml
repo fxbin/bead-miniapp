@@ -1,0 +1,22 @@
+<view class="container">
+  <view class="card" wx:if="{{usageList.length > 0}}">
+    <view class="info-row">
+      <text>总豆数: {{patternResult.totalBeads}}</text>
+    </view>
+    <view class="info-row">
+      <text>颜色数: {{patternResult.uniqueColors}}</text>
+    </view>
+  </view>
+
+  <view class="card" wx:if="{{usageList.length > 0}}">
+    <view class="usage-header">色号清单</view>
+    <view class="usage-row" wx:for="{{usageList}}" wx:key="code">
+      <text class="usage-code">{{item.code}}</text>
+      <text class="usage-count">{{item.count}} 颗</text>
+    </view>
+  </view>
+
+  <view class="card" wx:if="{{usageList.length === 0}}">
+    <text>暂无图纸数据。</text>
+  </view>
+</view>
