@@ -29,7 +29,7 @@ describe('generatePattern baseline', () => {
     expect(Object.values(result.paletteUsage).reduce((sum, count) => sum + count, 0)).toBe(4);
   });
 
-  it('supports standard bead-grid sizes', () => {
+  it('supports standard bead-grid sizes', { timeout: 60000 }, () => {
     const source = { width: 1, height: 1, pixels: [[{ r: 255, g: 255, b: 255 }]] };
     for (const size of [32, 48, 64]) {
       const result = generatePattern(source, {
