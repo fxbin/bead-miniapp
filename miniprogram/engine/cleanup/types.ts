@@ -22,6 +22,16 @@ export interface CleanupOptions {
    * Internally controls maxTinyRegionSize and iteration count.
    */
   cleanupLevel?: 0 | 1 | 2 | 3;
+  /**
+   * Optional protection mask (from edge protection).  When provided,
+   * cells where mask[y][x] === true are skipped during cleanup.
+   */
+  protectionMask?: boolean[][];
+  /**
+   * Weight added to a region's effective size for each protected cell
+   * it contains.  Default: 3.
+   */
+  protectionWeight?: number;
 }
 
 export interface CleanupDiagnostics {

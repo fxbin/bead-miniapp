@@ -8,6 +8,8 @@ import { mergePaletteColors } from './merge';
 import type { MergeDiagnostics } from './merge';
 import { cleanupSmallRegions } from './cleanup';
 import type { CleanupDiagnostics } from './cleanup';
+import { computeEdgeProtectionMask } from './edge';
+import type { EdgeProtectionDiagnostics, ColorLookup } from './edge';
 import type { GeneratePatternOptions, PatternResult, BeadCell } from './types';
 
 function assertBoardSize(value: number, label: string): void {
@@ -20,9 +22,8 @@ function assertBoardSize(value: number, label: string): void {
  * Bead Engine v0.1 baseline:
  * PixelMatrix -> target grid sampling -> physical brand palette matching.
  *
- * M1 optimization: similar-color merge, maxColors constraint, and
- * small-region cleanup are now applied after palette matching.
- * Edge protection will be integrated in a subsequent issue.
+ * M1 optimization: similar-color merge, maxColors constraint, edge protection,
+ * and small-region cleanup are now applied after palette matching.
  */
 export function generatePattern(
   imageData: PixelMatrix,
@@ -98,6 +99,24 @@ export function generatePattern(
     }
   }
 
+  // --- M1: edge / structure protection ---
+  let edgeDiagnostics: EdgeProtectionDiagnostics | null = null;
+  let protectionMask: boolean[][] | undefined;
+
+  if (options.protectEdges === true) {
+    // Build color lookup from the prepared palette.
+    const preparedPalette = getPreparedPalette(options.paletteId);
+    const colorLookup: ColorLookup = new Map(
+      preparedPalette.colors.map((c) => [c.code, c.prepared])
+    );
+
+    const edgeResult = computeEdgeProtectionMask(grid, colorLookup, matcherStrategy, {
+      enabled: true,
+    });
+    edgeDiagnostics = edgeResult.diagnostics;
+    protectionMask = edgeResult.mask;
+  }
+
   // --- M1: small-region / isolated-pixel cleanup ---
   let cleanupDiagnostics: CleanupDiagnostics | null = null;
 
@@ -105,6 +124,7 @@ export function generatePattern(
   if (cleanupEnabled) {
     const cleanupResult = cleanupSmallRegions(grid, {
       cleanupLevel: options.cleanupLevel as 0 | 1 | 2 | 3,
+      protectionMask,
     });
 
     cleanupDiagnostics = cleanupResult.diagnostics;
@@ -139,6 +159,7 @@ export function generatePattern(
       meanMatchDistance: matched.meanMatchDistance,
       merge: mergeDiagnostics,
       cleanup: cleanupDiagnostics,
+      edgeProtection: edgeDiagnostics,
     },
   };
 }
@@ -149,3 +170,4 @@ export * from './color';
 export * from './palette';
 export * from './merge';
 export * from './cleanup';
+export * from './edge';
