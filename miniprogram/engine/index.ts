@@ -171,3 +171,4 @@ export * from './palette';
 export * from './merge';
 export * from './cleanup';
 export * from './edge';
+export * from './preset';
