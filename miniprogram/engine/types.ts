@@ -1,6 +1,7 @@
 import type { ColorDistanceStrategy, RGBColor } from './color';
 import type { SamplingStrategy } from './image';
 import type { MergeDiagnostics } from './merge';
+import type { CleanupDiagnostics } from './cleanup';
 
 export interface GeneratePatternOptions {
   width: number;
@@ -28,6 +29,7 @@ export interface PatternDiagnostics {
   samplingStrategy: SamplingStrategy;
   meanMatchDistance: number;
   merge?: MergeDiagnostics | null;
+  cleanup?: CleanupDiagnostics | null;
 }
 
 export interface PatternResult {
