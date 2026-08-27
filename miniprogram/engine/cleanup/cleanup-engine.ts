@@ -169,10 +169,25 @@ function findMajorityNeighborColor(
 function cleanupIteration(
   grid: BeadCell[][],
   maxTinyRegionSize: number,
-  connectivity: 4 | 8
+  connectivity: 4 | 8,
+  protectionMask?: boolean[][],
+  protectionWeight?: number
 ): { grid: BeadCell[][]; replaced: number } {
   const regions = findConnectedRegions(grid, connectivity);
-  const tinyRegions = regions.filter((r) => r.size <= maxTinyRegionSize);
+  const pWeight = protectionWeight ?? 3;
+
+  const tinyRegions = regions.filter((r) => {
+    // Count protected cells in this region.
+    let protectedCount = 0;
+    if (protectionMask) {
+      for (const cell of r.cells) {
+        if (protectionMask[cell.y]?.[cell.x]) protectedCount++;
+      }
+    }
+    // Effective size = actual size + protected bonus.
+    const effectiveSize = r.size + protectedCount * pWeight;
+    return effectiveSize <= maxTinyRegionSize;
+  });
 
   if (tinyRegions.length === 0) {
     return { grid, replaced: 0 };
@@ -239,7 +254,9 @@ export function cleanupSmallRegions(
     const result = cleanupIteration(
       currentGrid,
       params.maxTinyRegionSize,
-      params.connectivity
+      params.connectivity,
+      options.protectionMask,
+      options.protectionWeight
     );
 
     if (result.replaced === 0) break;
