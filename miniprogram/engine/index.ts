@@ -6,6 +6,8 @@ import type { PreparedBeadColor } from './palette/types';
 import type { ColorDistanceStrategy } from './color';
 import { mergePaletteColors } from './merge';
 import type { MergeDiagnostics } from './merge';
+import { cleanupSmallRegions } from './cleanup';
+import type { CleanupDiagnostics } from './cleanup';
 import type { GeneratePatternOptions, PatternResult, BeadCell } from './types';
 
 function assertBoardSize(value: number, label: string): void {
@@ -18,9 +20,9 @@ function assertBoardSize(value: number, label: string): void {
  * Bead Engine v0.1 baseline:
  * PixelMatrix -> target grid sampling -> physical brand palette matching.
  *
- * M1 optimization: similar-color merge and maxColors constraint are now
- * applied after palette matching.  cleanup and edge protection will be
- * integrated in subsequent issues.
+ * M1 optimization: similar-color merge, maxColors constraint, and
+ * small-region cleanup are now applied after palette matching.
+ * Edge protection will be integrated in a subsequent issue.
  */
 export function generatePattern(
   imageData: PixelMatrix,
@@ -96,6 +98,33 @@ export function generatePattern(
     }
   }
 
+  // --- M1: small-region / isolated-pixel cleanup ---
+  let cleanupDiagnostics: CleanupDiagnostics | null = null;
+
+  const cleanupEnabled = options.cleanupLevel !== undefined && options.cleanupLevel > 0;
+  if (cleanupEnabled) {
+    const cleanupResult = cleanupSmallRegions(grid, {
+      cleanupLevel: options.cleanupLevel as 0 | 1 | 2 | 3,
+    });
+
+    cleanupDiagnostics = cleanupResult.diagnostics;
+
+    if (cleanupDiagnostics.cellsReplaced > 0) {
+      grid = cleanupResult.grid;
+
+      // Recompute paletteUsage.
+      const newUsage: Record<string, number> = {};
+      for (let y = 0; y < grid.length; y++) {
+        for (let x = 0; x < grid[y].length; x++) {
+          const code = grid[y][x].colorCode;
+          newUsage[code] = (newUsage[code] ?? 0) + 1;
+        }
+      }
+      paletteUsage = newUsage;
+      uniqueColors = Object.keys(paletteUsage).length;
+    }
+  }
+
   return {
     width: matched.width,
     height: matched.height,
@@ -109,6 +138,7 @@ export function generatePattern(
       samplingStrategy,
       meanMatchDistance: matched.meanMatchDistance,
       merge: mergeDiagnostics,
+      cleanup: cleanupDiagnostics,
     },
   };
 }
@@ -118,3 +148,4 @@ export * from './image';
 export * from './color';
 export * from './palette';
 export * from './merge';
+export * from './cleanup';
