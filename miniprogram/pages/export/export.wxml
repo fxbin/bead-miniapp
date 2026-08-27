@@ -1,19 +1,42 @@
 <view class="container">
+  <!-- Hidden canvas for export -->
+  <canvas type="2d" id="export-canvas" class="hidden-canvas"></canvas>
+
   <view class="card" wx:if="{{usageList.length > 0}}">
     <view class="info-row">
-      <text>总豆数: {{patternResult.totalBeads}}</text>
+      <text class="info-label">总豆数</text>
+      <text class="info-value">{{patternResult.totalBeads}}</text>
     </view>
     <view class="info-row">
-      <text>颜色数: {{patternResult.uniqueColors}}</text>
+      <text class="info-label">颜色数</text>
+      <text class="info-value">{{patternResult.uniqueColors}}</text>
+    </view>
+    <view class="info-row">
+      <text class="info-label">品牌</text>
+      <text class="info-value">{{patternResult.paletteId}}</text>
+    </view>
+  </view>
+
+  <view class="card" wx:if="{{usageList.length > 0}}">
+    <view class="sort-controls">
+      <view class="sort-btn {{sortBy === 'count' ? 'active' : ''}}" bindtap="onSortByCount">按数量排序</view>
+      <view class="sort-btn {{sortBy === 'code' ? 'active' : ''}}" bindtap="onSortByCode">按色号排序</view>
     </view>
   </view>
 
   <view class="card" wx:if="{{usageList.length > 0}}">
     <view class="usage-header">色号清单</view>
     <view class="usage-row" wx:for="{{usageList}}" wx:key="code">
+      <view class="usage-swatch" style="background: rgb({{item.rgb.r}}, {{item.rgb.g}}, {{item.rgb.b}})"></view>
       <text class="usage-code">{{item.code}}</text>
+      <text class="usage-name">{{item.name}}</text>
       <text class="usage-count">{{item.count}} 颗</text>
     </view>
+  </view>
+
+  <view class="card" wx:if="{{usageList.length > 0}}">
+    <view class="btn-primary export-btn" bindtap="onExportImage">保存图纸到相册</view>
+    <view class="btn-secondary" bindtap="onClearData">清除数据</view>
   </view>
 
   <view class="card" wx:if="{{usageList.length === 0}}">
