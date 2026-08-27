@@ -62,7 +62,7 @@ function neighborOffsets(connectivity: 4 | 8): Array<{ dx: number; dy: number }>
  * Two cells are connected if they share a neighbor relationship
  * (4 or 8 connectivity) and have the same colorCode.
  */
-function findConnectedRegions(
+export function findConnectedRegions(
   grid: BeadCell[][],
   connectivity: 4 | 8
 ): ConnectedRegion[] {

@@ -3,6 +3,7 @@ import type { SamplingStrategy } from './image';
 import type { MergeDiagnostics } from './merge';
 import type { CleanupDiagnostics } from './cleanup';
 import type { EdgeProtectionDiagnostics } from './edge';
+import type { QualityDiagnostics } from './preset';
 
 export interface GeneratePatternOptions {
   width: number;
@@ -32,6 +33,7 @@ export interface PatternDiagnostics {
   merge?: MergeDiagnostics | null;
   cleanup?: CleanupDiagnostics | null;
   edgeProtection?: EdgeProtectionDiagnostics | null;
+  quality?: QualityDiagnostics | null;
 }
 
 export interface PatternResult {
