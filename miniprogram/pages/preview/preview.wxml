@@ -1,14 +1,40 @@
 <view class="container">
   <view class="card" wx:if="{{patternResult}}">
     <view class="info-row">
-      <text>尺寸: {{patternResult.width}} × {{patternResult.height}}</text>
+      <text class="info-label">尺寸</text>
+      <text class="info-value">{{patternResult.width}} × {{patternResult.height}}</text>
     </view>
     <view class="info-row">
-      <text>总豆数: {{patternResult.totalBeads}}</text>
+      <text class="info-label">总豆数</text>
+      <text class="info-value">{{patternResult.totalBeads}}</text>
     </view>
     <view class="info-row">
-      <text>颜色数: {{patternResult.uniqueColors}}</text>
+      <text class="info-label">颜色数</text>
+      <text class="info-value">{{patternResult.uniqueColors}}</text>
     </view>
+  </view>
+
+  <view class="card" wx:if="{{patternResult}}">
+    <view class="controls">
+      <view class="control-btn {{showGrid ? 'active' : ''}}" bindtap="onToggleGrid">
+        网格 {{showGrid ? '开' : '关'}}
+      </view>
+      <view class="control-btn {{showCodes ? 'active' : ''}}" bindtap="onToggleCodes">
+        色号 {{showCodes ? '开' : '关'}}
+      </view>
+    </view>
+  </view>
+
+  <view class="canvas-container" wx:if="{{patternResult}}">
+    <scroll-view scroll-x scroll-y class="canvas-scroll">
+      <canvas
+        type="2d"
+        id="grid-canvas"
+        class="grid-canvas"
+        bindtouchmove="onTouchMove"
+        bindtouchend="onTouchEnd"
+      ></canvas>
+    </scroll-view>
   </view>
 
   <view class="card" wx:if="{{!patternResult}}">
