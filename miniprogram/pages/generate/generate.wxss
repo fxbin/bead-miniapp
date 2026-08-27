@@ -1,0 +1,94 @@
+.container {
+  padding: 20rpx;
+}
+
+.card {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+}
+
+.hidden-canvas {
+  position: fixed;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+}
+
+.upload-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60rpx 0;
+}
+
+.upload-icon {
+  font-size: 80rpx;
+  margin-bottom: 20rpx;
+}
+
+.upload-text {
+  font-size: 32rpx;
+  color: #333;
+  margin-bottom: 8rpx;
+}
+
+.upload-hint {
+  font-size: 26rpx;
+  color: #999;
+}
+
+.preview-image {
+  width: 100%;
+  max-height: 500rpx;
+  border-radius: 12rpx;
+}
+
+.re-select {
+  text-align: center;
+  color: #07c160;
+  font-size: 28rpx;
+  padding: 16rpx 0 0;
+}
+
+.setting-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16rpx 0;
+}
+
+.setting-label {
+  font-size: 32rpx;
+  color: #333;
+}
+
+.setting-value {
+  font-size: 32rpx;
+  color: #07c160;
+}
+
+.error-card {
+  background: #fff0f0;
+}
+
+.error-text {
+  color: #ee0a24;
+  font-size: 28rpx;
+}
+
+.btn-primary {
+  background: #07c160;
+  color: #fff;
+  border-radius: 12rpx;
+  padding: 24rpx;
+  font-size: 34rpx;
+  text-align: center;
+}
+
+.btn-primary.disabled {
+  opacity: 0.6;
+}
