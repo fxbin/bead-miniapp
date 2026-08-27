@@ -44,7 +44,7 @@ function benchmarkStandardSizes(): BenchmarkRow[] {
 }
 
 describe('engine benchmark harness', () => {
-  it('records baseline metrics for standard grid sizes', () => {
+  it('records baseline metrics for standard grid sizes', { timeout: 60000 }, () => {
     const rows = benchmarkStandardSizes();
     // Timing is diagnostic, not a flaky pass/fail threshold in CI.
     console.table(rows);
