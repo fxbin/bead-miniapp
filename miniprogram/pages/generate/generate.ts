@@ -1,5 +1,7 @@
 import { generatePattern } from '../../engine';
 import type { PatternResult } from '../../engine';
+import { resolvePreset } from '../../engine/preset';
+import { readImageToPixelMatrix, validatePixelMatrix } from '../../adapter/imageAdapter';
 
 Page({
   data: {
@@ -23,6 +25,10 @@ Page({
       mediaType: ['image'],
       sourceType: ['album', 'camera'],
       success: (res: any) => {
+        if (!res.tempFiles || res.tempFiles.length === 0) {
+          this.setData({ error: '未选择图片' });
+          return;
+        }
         this.setData({ imageSrc: res.tempFiles[0].tempFilePath, error: '' });
       },
       fail: () => {
@@ -50,21 +56,33 @@ Page({
     this.setData({ loading: true, error: '' });
 
     try {
-      // Engine adapter: read image pixels via canvas, convert to PixelMatrix
-      const pixelMatrix = await this.readImageToPixelMatrix(this.data.imageSrc);
+      // Get canvas node for image processing.
+      const canvas = await this.getCanvasNode();
+
+      // Use the image adapter to read pixels (handles downsampling,
+      // orientation, and alpha).
+      const pixelMatrix = await readImageToPixelMatrix(this.data.imageSrc, canvas);
+      validatePixelMatrix(pixelMatrix);
+
+      // Resolve preset parameters.
+      const presetParams = resolvePreset(this.data.selectedPreset);
 
       const result = generatePattern(pixelMatrix, {
         width: this.data.selectedSize,
         height: this.data.selectedSize,
         paletteId: 'artkal-c-2024',
         matcherStrategy: 'oklab',
-        cleanupLevel: 2,
-        protectEdges: true,
+        maxColors: presetParams.maxColors,
+        mergeSimilarColors: presetParams.mergeSimilarColors,
+        mergeThreshold: presetParams.mergeThreshold,
+        cleanupLevel: presetParams.cleanupLevel,
+        detailLevel: presetParams.detailLevel,
+        protectEdges: presetParams.protectEdges,
       });
 
       this.setData({ patternResult: result, loading: false });
 
-      // Store in global data for preview page
+      // Store in global data for preview page.
       const app = getApp() as any;
       app.globalData.lastPatternResult = result;
 
@@ -78,65 +96,18 @@ Page({
   },
 
   /**
-   * Engine adapter: read image file via canvas and extract pixel data.
-   * This is the only place where wx.* APIs touch image data before
-   * passing it to the pure Engine.
+   * Get the hidden canvas node via selector query.
    */
-  readImageToPixelMatrix(src: string): Promise<{
-    width: number;
-    height: number;
-    pixels: { r: number; g: number; b: number; a?: number }[][];
-  }> {
+  getCanvasNode(): Promise<any> {
     return new Promise((resolve, reject) => {
-      wx.getImageInfo({
-        src,
-        success: (imgInfo: any) => {
-          const query = wx.createSelectorQuery();
-          query.select('#hidden-canvas').fields({ node: true }).exec((res: any) => {
-            const canvas = res[0]?.node;
-            if (!canvas) {
-              reject(new Error('Canvas not available'));
-              return;
-            }
-
-            const ctx = canvas.getContext('2d');
-            const img = canvas.createImage();
-            img.onload = () => {
-              canvas.width = imgInfo.width;
-              canvas.height = imgInfo.height;
-              ctx.drawImage(img, 0, 0);
-
-              const imageData = ctx.getImageData(
-                0, 0, canvas.width, canvas.height
-              );
-              const data = imageData.data;
-              const pixels: { r: number; g: number; b: number; a?: number }[][] = [];
-
-              for (let y = 0; y < canvas.height; y++) {
-                const row: { r: number; g: number; b: number; a?: number }[] = [];
-                for (let x = 0; x < canvas.width; x++) {
-                  const idx = (y * canvas.width + x) * 4;
-                  row.push({
-                    r: data[idx],
-                    g: data[idx + 1],
-                    b: data[idx + 2],
-                    a: data[idx + 3],
-                  });
-                }
-                pixels.push(row);
-              }
-
-              resolve({
-                width: canvas.width,
-                height: canvas.height,
-                pixels,
-              });
-            };
-            img.onerror = () => reject(new Error('Failed to load image'));
-            img.src = src;
-          });
-        },
-        fail: () => reject(new Error('Failed to get image info')),
+      const query = wx.createSelectorQuery();
+      query.select('#hidden-canvas').fields({ node: true }).exec((res: any) => {
+        const canvas = res[0]?.node;
+        if (!canvas) {
+          reject(new Error('Canvas 初始化失败'));
+          return;
+        }
+        resolve(canvas);
       });
     });
   },
