@@ -1,0 +1,21 @@
+<view class="container">
+  <view class="card" wx:if="{{patternResult}}">
+    <view class="info-row">
+      <text>尺寸: {{patternResult.width}} × {{patternResult.height}}</text>
+    </view>
+    <view class="info-row">
+      <text>总豆数: {{patternResult.totalBeads}}</text>
+    </view>
+    <view class="info-row">
+      <text>颜色数: {{patternResult.uniqueColors}}</text>
+    </view>
+  </view>
+
+  <view class="card" wx:if="{{!patternResult}}">
+    <text>暂无图纸数据，请先从首页生成。</text>
+  </view>
+
+  <navigator url="/pages/export/export" class="btn-primary" wx:if="{{patternResult}}">
+    查看色号清单
+  </navigator>
+</view>

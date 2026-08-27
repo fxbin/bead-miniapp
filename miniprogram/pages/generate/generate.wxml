@@ -1,0 +1,40 @@
+<view class="container">
+  <!-- Hidden canvas for image processing -->
+  <canvas type="2d" id="hidden-canvas" class="hidden-canvas"></canvas>
+
+  <view class="card" wx:if="{{!imageSrc}}">
+    <view class="upload-area" bindtap="onChooseImage">
+      <text class="upload-icon">📷</text>
+      <text class="upload-text">点击选择图片</text>
+      <text class="upload-hint">支持相册和拍照</text>
+    </view>
+  </view>
+
+  <view class="card" wx:if="{{imageSrc}}">
+    <image src="{{imageSrc}}" mode="aspectFit" class="preview-image"></image>
+    <view class="re-select" bindtap="onChooseImage">重新选择</view>
+  </view>
+
+  <view class="card" wx:if="{{imageSrc}}">
+    <view class="setting-row">
+      <text class="setting-label">尺寸</text>
+      <picker mode="selector" range="{{sizes}}" bindchange="onSizeChange">
+        <text class="setting-value">{{selectedSize}} × {{selectedSize}}</text>
+      </picker>
+    </view>
+    <view class="setting-row">
+      <text class="setting-label">预设</text>
+      <picker mode="selector" range="{{presets}}" bindchange="onPresetChange">
+        <text class="setting-value">{{selectedPreset === 'easy' ? '易拼' : selectedPreset === 'balanced' ? '平衡' : '高还原'}}</text>
+      </picker>
+    </view>
+  </view>
+
+  <view class="card error-card" wx:if="{{error}}">
+    <text class="error-text">{{error}}</text>
+  </view>
+
+  <view class="btn-primary {{loading ? 'disabled' : ''}}" bindtap="onGenerate" wx:if="{{imageSrc}}">
+    {{loading ? '生成中...' : '生成图纸'}}
+  </view>
+</view>
