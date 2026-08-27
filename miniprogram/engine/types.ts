@@ -1,5 +1,6 @@
 import type { ColorDistanceStrategy, RGBColor } from './color';
 import type { SamplingStrategy } from './image';
+import type { MergeDiagnostics } from './merge';
 
 export interface GeneratePatternOptions {
   width: number;
@@ -14,6 +15,7 @@ export interface GeneratePatternOptions {
   detailLevel?: number;
   cleanupLevel?: number;
   mergeSimilarColors?: boolean;
+  mergeThreshold?: number;
   protectEdges?: boolean;
 }
 
@@ -25,6 +27,7 @@ export interface PatternDiagnostics {
   matcherStrategy: ColorDistanceStrategy;
   samplingStrategy: SamplingStrategy;
   meanMatchDistance: number;
+  merge?: MergeDiagnostics | null;
 }
 
 export interface PatternResult {
