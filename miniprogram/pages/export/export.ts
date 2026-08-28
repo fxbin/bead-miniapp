@@ -170,7 +170,7 @@ Page({
 
       const colWidth = (canvasWidth - padding * 2) / legendColumns;
       ctx.font = '18px sans-serif';
-      this.data.usageList.forEach((item, index) => {
+      this.data.usageList.forEach((item: UsageItem, index: number) => {
         const col = index % legendColumns;
         const row = Math.floor(index / legendColumns);
         const x = padding + col * colWidth;
