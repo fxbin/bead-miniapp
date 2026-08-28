@@ -20,7 +20,7 @@ function makeColorLookup(colors: Record<string, [number, number, number]>): Colo
 describe('resolvePreset', () => {
   it('easy preset: low maxColors, high cleanup, merge enabled', () => {
     const params = resolvePreset('easy');
-    expect(params.maxColors).toBe(24);
+    expect(params.maxColors).toBe(16);
     expect(params.mergeSimilarColors).toBe(true);
     expect(params.cleanupLevel).toBe(3);
     expect(params.protectEdges).toBe(true);
@@ -28,7 +28,7 @@ describe('resolvePreset', () => {
 
   it('balanced preset: medium maxColors, medium cleanup', () => {
     const params = resolvePreset('balanced');
-    expect(params.maxColors).toBe(48);
+    expect(params.maxColors).toBe(32);
     expect(params.mergeSimilarColors).toBe(true);
     expect(params.cleanupLevel).toBe(2);
     expect(params.protectEdges).toBe(true);

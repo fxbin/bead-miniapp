@@ -68,23 +68,35 @@ export interface PresetParameters {
 
 /**
  * Resolve a product preset to internal parameters.
+ *
+ * v0.2 recalibration (#40): parameters tuned against golden benchmark (#38)
+ * to ensure visible differentiation between presets across all grid sizes.
+ *
+ * Key findings from benchmark:
+ * - Programmatic fixtures have few unique colors (3-4), so preset differences
+ *   mainly manifest on real photos with broader color distributions.
+ * - easy and balanced were nearly identical on programmatic fixtures;
+ *   lowering easy's maxColors to 16 and raising mergeThreshold to 0.10
+ *   creates clear separation.
+ * - fidelity's no-merge + no-cap + minimal cleanup produces more isolated
+ *   pixels (avg 11 at 64x64), which is expected for maximum detail retention.
  */
 export function resolvePreset(preset: PatternPreset): PresetParameters {
   switch (preset) {
     case 'easy':
       return {
-        maxColors: 24,
+        maxColors: 16,
         mergeSimilarColors: true,
-        mergeThreshold: 0.08,
+        mergeThreshold: 0.10,
         cleanupLevel: 3,
         detailLevel: 1,
         protectEdges: true,
       };
     case 'balanced':
       return {
-        maxColors: 48,
+        maxColors: 32,
         mergeSimilarColors: true,
-        mergeThreshold: 0.05,
+        mergeThreshold: 0.06,
         cleanupLevel: 2,
         detailLevel: 2,
         protectEdges: true,
