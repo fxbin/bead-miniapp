@@ -1,68 +1,103 @@
-<view class="container">
-  <view class="card" wx:if="{{patternResult}}">
-    <view class="info-row">
-      <text class="info-label">尺寸</text>
-      <text class="info-value">{{patternResult.width}} × {{patternResult.height}}</text>
+<view class="container preview-page">
+  <view wx:if="{{patternResult}}">
+    <view class="preview-head">
+      <view class="eyebrow">YOUR PATTERN</view>
+      <view class="preview-title">拼豆图纸</view>
+      <view class="mode-switch">
+        <view class="mode-item {{viewMode === 'original' ? 'active' : ''}}" bindtap="onToggleOriginal">原图</view>
+        <view class="mode-item {{viewMode === 'pattern' ? 'active' : ''}}" bindtap="onToggleOriginal">拼豆</view>
+      </view>
     </view>
-    <view class="info-row">
-      <text class="info-label">总豆数</text>
-      <text class="info-value">{{patternResult.totalBeads}}</text>
+
+    <view class="art-card">
+      <image wx:if="{{viewMode === 'original' && imageSrc}}" src="{{imageSrc}}" mode="aspectFit" class="original-image"></image>
+      <scroll-view wx:else scroll-x scroll-y class="canvas-scroll">
+        <canvas
+          type="2d"
+          id="grid-canvas"
+          class="grid-canvas"
+          style="width: {{canvasWidth}}px; height: {{canvasHeight}}px;"
+          bindtouchmove="onTouchMove"
+          bindtouchend="onTouchEnd"
+          bindtap="onCanvasTap"
+        ></canvas>
+      </scroll-view>
+      <view class="edit-hint" wx:if="{{editMode}}">编辑模式 · 点击一颗豆子换色</view>
     </view>
-    <view class="info-row">
-      <text class="info-label">颜色数</text>
-      <text class="info-value">{{patternResult.uniqueColors}}</text>
+
+    <view class="pattern-stats">
+      <text>{{patternResult.width}} × {{patternResult.height}}</text>
+      <text class="dot">·</text>
+      <text>{{patternResult.uniqueColors}} 色</text>
+      <text class="dot">·</text>
+      <text>{{patternResult.totalBeads}} 豆</text>
     </view>
+
+    <view class="tool-bar">
+      <view class="tool-item {{viewMode === 'original' ? 'active' : ''}}" bindtap="onToggleOriginal">
+        <view class="tool-icon">▧</view><text>原图</text>
+      </view>
+      <view class="tool-item {{showGrid ? 'active' : ''}}" bindtap="onToggleGrid">
+        <view class="tool-icon">⌗</view><text>网格</text>
+      </view>
+      <view class="tool-item {{showCodes ? 'active' : ''}}" bindtap="onToggleCodes">
+        <view class="tool-icon">Aa</view><text>色号</text>
+      </view>
+      <view class="tool-item {{editMode ? 'active' : ''}}" bindtap="onToggleEdit">
+        <view class="tool-icon">✎</view><text>编辑</text>
+      </view>
+      <view class="tool-item {{canUndo ? '' : 'disabled'}}" bindtap="onUndo">
+        <view class="tool-icon">↶</view><text>撤销</text>
+      </view>
+    </view>
+
+    <view class="palette-card" wx:if="{{usedColors.length > 0}}">
+      <view class="palette-head">
+        <view>
+          <view class="palette-title">颜色</view>
+          <view class="palette-subtitle">当前图纸使用 {{patternResult.uniqueColors}} 种颜色</view>
+        </view>
+        <view class="palette-tip">点击“编辑”可局部换色</view>
+      </view>
+      <scroll-view scroll-x class="swatch-scroll">
+        <view class="swatch-row">
+          <view class="used-color" wx:for="{{usedColors}}" wx:key="code">
+            <view class="bead-swatch" style="background: rgb({{item.rgb.r}}, {{item.rgb.g}}, {{item.rgb.b}})">
+              <view class="bead-hole"></view>
+            </view>
+            <text class="swatch-code">{{item.code}}</text>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+
+    <navigator url="/pages/export/export" class="btn-primary preview-cta">制作 / 保存图纸</navigator>
   </view>
 
-  <view class="card" wx:if="{{patternResult}}">
-    <view class="controls">
-      <view class="control-btn {{showGrid ? 'active' : ''}}" bindtap="onToggleGrid">网格</view>
-      <view class="control-btn {{showCodes ? 'active' : ''}}" bindtap="onToggleCodes">色号</view>
-      <view class="control-btn {{editMode ? 'active' : ''}}" bindtap="onToggleEdit">编辑</view>
-      <view class="control-btn {{canUndo ? '' : 'disabled'}}" bindtap="onUndo">撤销</view>
-    </view>
+  <view class="empty-state" wx:if="{{!patternResult}}">
+    <view class="empty-title">还没有图纸</view>
+    <view class="empty-copy">先选择一张照片生成拼豆图纸。</view>
+    <navigator url="/pages/generate/generate?autoChoose=1" class="btn-primary">选择照片</navigator>
   </view>
 
-  <view class="canvas-container" wx:if="{{patternResult}}">
-    <scroll-view scroll-x scroll-y class="canvas-scroll">
-      <canvas
-        type="2d"
-        id="grid-canvas"
-        class="grid-canvas"
-        bindtouchmove="onTouchMove"
-        bindtouchend="onTouchEnd"
-        bindtap="onCanvasTap"
-      ></canvas>
-    </scroll-view>
-  </view>
-
-  <!-- #22: Color picker overlay -->
   <view class="color-picker-mask" wx:if="{{showColorPicker}}" bindtap="onCloseColorPicker">
     <view class="color-picker" catchtap="">
+      <view class="picker-handle"></view>
       <view class="picker-header">
-        <text>当前: {{selectedCell.code}}</text>
-        <text class="picker-close" bindtap="onCloseColorPicker">关闭</text>
+        <view>
+          <view class="picker-title">替换这颗豆子</view>
+          <view class="picker-subtitle">当前色号 {{selectedCell.code}}</view>
+        </view>
+        <text class="picker-close" bindtap="onCloseColorPicker">完成</text>
       </view>
       <scroll-view scroll-y class="color-list">
-        <view
-          class="color-item"
-          wx:for="{{availableColors}}"
-          wx:key="code"
-          data-code="{{item.code}}"
-          bindtap="onColorSelect"
-        >
-          <view class="color-swatch" style="background: rgb({{item.rgb.r}}, {{item.rgb.g}}, {{item.rgb.b}})"></view>
-          <text class="color-code">{{item.code}}</text>
+        <view class="color-grid">
+          <view class="color-item" wx:for="{{availableColors}}" wx:key="code" data-code="{{item.code}}" bindtap="onColorSelect">
+            <view class="bead-swatch picker-swatch" style="background: rgb({{item.rgb.r}}, {{item.rgb.g}}, {{item.rgb.b}})"><view class="bead-hole"></view></view>
+            <text class="color-code">{{item.code}}</text>
+          </view>
         </view>
       </scroll-view>
     </view>
   </view>
-
-  <view class="card" wx:if="{{!patternResult}}">
-    <text>暂无图纸数据，请先从首页生成。</text>
-  </view>
-
-  <navigator url="/pages/export/export" class="btn-primary" wx:if="{{patternResult}}">
-    查看色号清单
-  </navigator>
 </view>

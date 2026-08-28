@@ -1,40 +1,87 @@
-<view class="container">
-  <!-- Hidden canvas for image processing -->
+<view class="container generate-page">
   <canvas type="2d" id="hidden-canvas" class="hidden-canvas"></canvas>
 
-  <view class="card" wx:if="{{!imageSrc}}">
-    <view class="upload-area" bindtap="onChooseImage">
-      <text class="upload-icon">📷</text>
-      <text class="upload-text">点击选择图片</text>
-      <text class="upload-hint">支持相册和拍照</text>
+  <view class="page-head">
+    <view class="eyebrow">CREATE PATTERN</view>
+    <view class="page-title">生成设置</view>
+    <view class="page-subtitle">调整偏好，生成你的专属拼豆图纸</view>
+  </view>
+
+  <view class="card empty-card" wx:if="{{!imageSrc}}">
+    <view class="empty-beads">
+      <view class="empty-bead eb1"></view><view class="empty-bead eb2"></view><view class="empty-bead eb3"></view>
+    </view>
+    <view class="empty-title">先选择一张照片</view>
+    <view class="empty-hint">支持相册和拍照，照片只在本机处理</view>
+    <view class="outline-action" bindtap="onChooseImage">选择照片</view>
+  </view>
+
+  <view class="photo-card" wx:if="{{imageSrc}}">
+    <image src="{{imageSrc}}" mode="aspectFill" class="preview-image"></image>
+    <view class="re-select" bindtap="onChooseImage">更换照片</view>
+  </view>
+
+  <view class="setting-card" wx:if="{{imageSrc}}">
+    <view class="setting-head">
+      <view>
+        <view class="setting-title">图纸尺寸</view>
+        <view class="setting-hint">尺寸越大，细节越丰富</view>
+      </view>
+    </view>
+    <view class="size-options">
+      <view class="size-chip {{selectedSize === 32 ? 'selected' : ''}}" data-size="32" bindtap="onSizeTap">32 × 32</view>
+      <view class="size-chip recommended {{selectedSize === 48 ? 'selected' : ''}}" data-size="48" bindtap="onSizeTap">
+        <text>48 × 48</text>
+        <text class="recommend-badge">推荐</text>
+      </view>
+      <view class="size-chip {{selectedSize === 64 ? 'selected' : ''}}" data-size="64" bindtap="onSizeTap">64 × 64</view>
     </view>
   </view>
 
-  <view class="card" wx:if="{{imageSrc}}">
-    <image src="{{imageSrc}}" mode="aspectFit" class="preview-image"></image>
-    <view class="re-select" bindtap="onChooseImage">重新选择</view>
+  <view class="setting-card" wx:if="{{imageSrc}}">
+    <view class="setting-head">
+      <view>
+        <view class="setting-title">效果预设</view>
+        <view class="setting-hint">不用理解算法，选择你更在意的效果</view>
+      </view>
+    </view>
+    <view class="preset-options">
+      <view class="preset-card {{selectedPreset === 'easy' ? 'selected' : ''}}" data-preset="easy" bindtap="onPresetTap">
+        <view class="preset-symbol">○</view>
+        <view class="preset-name">易拼</view>
+        <view class="preset-desc">颜色更少<br/>更容易制作</view>
+      </view>
+      <view class="preset-card {{selectedPreset === 'balanced' ? 'selected' : ''}}" data-preset="balanced" bindtap="onPresetTap">
+        <view class="preset-symbol">◐</view>
+        <view class="preset-name">平衡</view>
+        <view class="preset-desc">色彩与细节<br/>达到平衡</view>
+        <view class="selected-dot" wx:if="{{selectedPreset === 'balanced'}}">✓</view>
+      </view>
+      <view class="preset-card {{selectedPreset === 'fidelity' ? 'selected' : ''}}" data-preset="fidelity" bindtap="onPresetTap">
+        <view class="preset-symbol">✦</view>
+        <view class="preset-name">高还原</view>
+        <view class="preset-desc">更多颜色<br/>保留更多细节</view>
+      </view>
+    </view>
   </view>
 
-  <view class="card" wx:if="{{imageSrc}}">
-    <view class="setting-row">
-      <text class="setting-label">尺寸</text>
-      <picker mode="selector" range="{{sizes}}" bindchange="onSizeChange">
-        <text class="setting-value">{{selectedSize}} × {{selectedSize}}</text>
-      </picker>
-    </view>
-    <view class="setting-row">
-      <text class="setting-label">预设</text>
-      <picker mode="selector" range="{{presets}}" bindchange="onPresetChange">
-        <text class="setting-value">{{selectedPreset === 'easy' ? '易拼' : selectedPreset === 'balanced' ? '平衡' : '高还原'}}</text>
-      </picker>
-    </view>
-  </view>
+  <view class="privacy-note" wx:if="{{imageSrc}}">照片仅在本机处理 · 不上传服务器</view>
 
-  <view class="card error-card" wx:if="{{error}}">
+  <view class="error-card" wx:if="{{error}}">
     <text class="error-text">{{error}}</text>
   </view>
 
-  <view class="btn-primary {{loading ? 'disabled' : ''}}" bindtap="onGenerate" wx:if="{{imageSrc}}">
-    {{loading ? '生成中...' : '生成图纸'}}
+  <view class="btn-primary generate-button {{loading ? 'disabled' : ''}}" bindtap="onGenerate" wx:if="{{imageSrc}}">
+    {{loading ? '正在把照片变成拼豆…' : '生成拼豆图纸'}}
+  </view>
+
+  <view class="generation-overlay" wx:if="{{loading}}">
+    <view class="generation-panel">
+      <view class="loader-row">
+        <view class="loader-bead lb1"></view><view class="loader-bead lb2"></view><view class="loader-bead lb3"></view><view class="loader-bead lb4"></view>
+      </view>
+      <view class="generation-title">正在生成拼豆图纸</view>
+      <view class="generation-copy">匹配真实色板 · 整理细节与碎片</view>
+    </view>
   </view>
 </view>

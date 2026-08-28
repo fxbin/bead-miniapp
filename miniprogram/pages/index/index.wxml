@@ -1,35 +1,51 @@
-<view class="container">
-  <view class="card">
-    <view class="title">拼豆图纸生成器</view>
-    <view class="subtitle">照片本地处理，无需上传服务器</view>
+<view class="container home-page">
+  <view class="hero">
+    <view class="bead-cloud" aria-hidden="true">
+      <view class="bead bead-pink"></view>
+      <view class="bead bead-blue"></view>
+      <view class="bead bead-yellow"></view>
+      <view class="bead bead-green"></view>
+      <view class="bead bead-coral"></view>
+      <view class="bead bead-cream"></view>
+    </view>
+    <view class="eyebrow">BEAD ATELIER</view>
+    <view class="title">拼豆图纸</view>
+    <view class="subtitle">把喜欢的照片，变成真正能拼的图纸</view>
   </view>
 
-  <view class="card">
-    <view class="feature-row">
-      <text class="feature-icon">📷</text>
-      <text class="feature-text">选择图片</text>
+  <navigator url="/pages/generate/generate?autoChoose=1" class="upload-card">
+    <view class="upload-plus">＋</view>
+    <view class="upload-title">选择照片</view>
+    <view class="upload-hint">相册 / 拍照</view>
+  </navigator>
+
+  <view class="privacy-note">
+    <view class="privacy-lock">⌁</view>
+    <text>照片仅在本机处理，不上传服务器</text>
+  </view>
+
+  <view class="sample-card">
+    <view class="sample-head">
+      <text>从照片到拼豆</text>
+      <text class="sample-caption">一次生成，可继续调整</text>
     </view>
-    <view class="feature-row">
-      <text class="feature-icon">🎨</text>
-      <text class="feature-text">生成拼豆图纸</text>
-    </view>
-    <view class="feature-row">
-      <text class="feature-icon">📋</text>
-      <text class="feature-text">查看色号与数量</text>
-    </view>
-    <view class="feature-row">
-      <text class="feature-icon">💾</text>
-      <text class="feature-text">保存图纸</text>
+    <view class="sample-flow">
+      <view class="sample-photo">
+        <view class="photo-sun"></view>
+        <view class="photo-hill hill-back"></view>
+        <view class="photo-hill hill-front"></view>
+      </view>
+      <view class="sample-arrow">→</view>
+      <view class="sample-beads">
+        <view class="mini-bead b1"></view><view class="mini-bead b2"></view><view class="mini-bead b3"></view><view class="mini-bead b4"></view>
+        <view class="mini-bead b2"></view><view class="mini-bead b3"></view><view class="mini-bead b4"></view><view class="mini-bead b1"></view>
+        <view class="mini-bead b3"></view><view class="mini-bead b4"></view><view class="mini-bead b1"></view><view class="mini-bead b2"></view>
+        <view class="mini-bead b4"></view><view class="mini-bead b1"></view><view class="mini-bead b2"></view><view class="mini-bead b3"></view>
+      </view>
     </view>
   </view>
 
-  <view class="card">
-    <view class="privacy-note">
-      🔒 您的照片仅在本设备上处理，不会上传到任何服务器。
-    </view>
-  </view>
-
-  <navigator url="/pages/generate/generate" class="btn-primary">
-    开始制作
+  <navigator url="/pages/generate/generate?autoChoose=1" class="btn-primary home-cta">
+    选择照片并开始
   </navigator>
 </view>
