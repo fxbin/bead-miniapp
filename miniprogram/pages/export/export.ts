@@ -194,11 +194,13 @@ Page({
       wx.canvasToTempFilePath({
         canvas,
         success: (fileRes: any) => {
-          wx.saveImageToPhotosAlbum({
-            tempFilePath: fileRes.tempFilePath,
-            success: () => wx.showToast({ title: '已保存到相册', icon: 'success' }),
-            fail: (err: any) => {
-              if (err.errMsg?.includes('auth deny')) {
+          // Check album write permission before attempting save.
+          // This provides a smoother UX than relying on saveImageToPhotosAlbum's fail.
+          wx.getSetting({
+            success: (settingRes: any) => {
+              const hasPermission = settingRes.authSetting['scope.writePhotosAlbum'];
+              if (hasPermission === false) {
+                // Previously denied — guide to settings.
                 wx.showModal({
                   title: '需要相册权限',
                   content: '请在设置中允许保存到相册',
@@ -207,14 +209,45 @@ Page({
                     if (modalRes.confirm) wx.openSetting();
                   },
                 });
-              } else {
-                wx.showToast({ title: '保存失败', icon: 'none' });
+                return;
               }
+              if (hasPermission === undefined) {
+                // Never asked — request authorization first.
+                wx.authorize({
+                  scope: 'scope.writePhotosAlbum',
+                  success: () => this.doSaveImage(fileRes.tempFilePath),
+                  fail: () => {
+                    wx.showModal({
+                      title: '需要相册权限',
+                      content: '请在设置中允许保存到相册',
+                      confirmText: '去设置',
+                      success: (modalRes: any) => {
+                        if (modalRes.confirm) wx.openSetting();
+                      },
+                    });
+                  },
+                });
+                return;
+              }
+              // Already authorized — save directly.
+              this.doSaveImage(fileRes.tempFilePath);
+            },
+            fail: () => {
+              // Fallback: try saving directly.
+              this.doSaveImage(fileRes.tempFilePath);
             },
           });
         },
         fail: () => wx.showToast({ title: '导出失败', icon: 'none' }),
       });
+    });
+  },
+
+  doSaveImage(tempFilePath: string) {
+    wx.saveImageToPhotosAlbum({
+      tempFilePath,
+      success: () => wx.showToast({ title: '已保存到相册', icon: 'success' }),
+      fail: () => wx.showToast({ title: '保存失败', icon: 'none' }),
     });
   },
 

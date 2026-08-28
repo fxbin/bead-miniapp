@@ -12,5 +12,15 @@
     "navigationBarTextStyle": "black"
   },
   "style": "v2",
-  "sitemapLocation": "sitemap.json"
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents",
+  "__usePrivacyCheck__": true,
+  "permission": {
+    "scope.writePhotosAlbum": {
+      "desc": "用于将生成的拼豆图纸保存到您的相册"
+    }
+  },
+  "requiredPrivateInfos": [
+    "chooseMedia"
+  ]
 }
