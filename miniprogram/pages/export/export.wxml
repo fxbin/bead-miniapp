@@ -1,45 +1,60 @@
-<view class="container">
-  <!-- Hidden canvas for export -->
+<view class="container export-page">
   <canvas type="2d" id="export-canvas" class="hidden-canvas"></canvas>
 
-  <view class="card" wx:if="{{usageList.length > 0}}">
-    <view class="info-row">
-      <text class="info-label">总豆数</text>
-      <text class="info-value">{{patternResult.totalBeads}}</text>
+  <view wx:if="{{usageList.length > 0}}">
+    <view class="export-head">
+      <view class="eyebrow">CRAFT SHEET</view>
+      <view class="export-title">制作图纸</view>
+      <view class="export-subtitle">保存图纸，开始制作吧</view>
     </view>
-    <view class="info-row">
-      <text class="info-label">颜色数</text>
-      <text class="info-value">{{patternResult.uniqueColors}}</text>
+
+    <view class="summary-card">
+      <view class="summary-item"><view class="summary-label">品牌</view><view class="summary-value">{{brandLabel}}</view></view>
+      <view class="summary-item"><view class="summary-label">尺寸</view><view class="summary-value">{{patternResult.width}} × {{patternResult.height}}</view></view>
+      <view class="summary-item"><view class="summary-label">总豆数</view><view class="summary-value">{{patternResult.totalBeads}}</view></view>
+      <view class="summary-item"><view class="summary-label">颜色</view><view class="summary-value">{{patternResult.uniqueColors}}</view></view>
     </view>
-    <view class="info-row">
-      <text class="info-label">品牌</text>
-      <text class="info-value">{{patternResult.paletteId}}</text>
+
+    <view class="sheet-card">
+      <view class="sheet-label">图纸预览</view>
+      <view class="sheet-preview-wrap">
+        <canvas type="2d" id="sheet-preview-canvas" class="sheet-preview-canvas"></canvas>
+      </view>
+      <view class="sheet-note">预览展示拼豆颗粒效果，保存图纸会包含清晰网格与颜色清单。</view>
     </view>
+
+    <view class="colors-card">
+      <view class="colors-head">
+        <view>
+          <view class="colors-title">颜色清单</view>
+          <view class="colors-subtitle">{{patternResult.uniqueColors}} 种颜色 · 按当前图纸实时统计</view>
+        </view>
+        <view class="sort-tabs">
+          <view class="sort-tab {{sortBy === 'count' ? 'active' : ''}}" bindtap="onSortByCount">数量</view>
+          <view class="sort-tab {{sortBy === 'code' ? 'active' : ''}}" bindtap="onSortByCode">色号</view>
+        </view>
+      </view>
+
+      <view class="usage-grid">
+        <view class="usage-row" wx:for="{{usageList}}" wx:key="code">
+          <view class="usage-swatch" style="background: rgb({{item.rgb.r}}, {{item.rgb.g}}, {{item.rgb.b}})"><view class="swatch-hole"></view></view>
+          <view class="usage-main">
+            <view class="usage-code">{{item.code}}</view>
+            <view class="usage-name">{{item.name}}</view>
+          </view>
+          <view class="usage-count">{{item.count}}<text> 颗</text></view>
+        </view>
+      </view>
+    </view>
+
+    <view class="export-tip">保存后的图纸可直接用于备料与制作；颜色请以实际品牌豆为准。</view>
+    <view class="btn-primary export-btn" bindtap="onExportImage">保存到相册</view>
+    <view class="clear-action" bindtap="onClearData">清除当前图纸</view>
   </view>
 
-  <view class="card" wx:if="{{usageList.length > 0}}">
-    <view class="sort-controls">
-      <view class="sort-btn {{sortBy === 'count' ? 'active' : ''}}" bindtap="onSortByCount">按数量排序</view>
-      <view class="sort-btn {{sortBy === 'code' ? 'active' : ''}}" bindtap="onSortByCode">按色号排序</view>
-    </view>
-  </view>
-
-  <view class="card" wx:if="{{usageList.length > 0}}">
-    <view class="usage-header">色号清单</view>
-    <view class="usage-row" wx:for="{{usageList}}" wx:key="code">
-      <view class="usage-swatch" style="background: rgb({{item.rgb.r}}, {{item.rgb.g}}, {{item.rgb.b}})"></view>
-      <text class="usage-code">{{item.code}}</text>
-      <text class="usage-name">{{item.name}}</text>
-      <text class="usage-count">{{item.count}} 颗</text>
-    </view>
-  </view>
-
-  <view class="card" wx:if="{{usageList.length > 0}}">
-    <view class="btn-primary export-btn" bindtap="onExportImage">保存图纸到相册</view>
-    <view class="btn-secondary" bindtap="onClearData">清除数据</view>
-  </view>
-
-  <view class="card" wx:if="{{usageList.length === 0}}">
-    <text>暂无图纸数据。</text>
+  <view class="empty-state" wx:if="{{usageList.length === 0}}">
+    <view class="empty-title">暂无图纸数据</view>
+    <view class="empty-copy">先生成一张拼豆图纸，再来制作清单。</view>
+    <navigator url="/pages/generate/generate?autoChoose=1" class="btn-primary">选择照片</navigator>
   </view>
 </view>
