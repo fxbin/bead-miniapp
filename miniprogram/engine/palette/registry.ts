@@ -30,10 +30,17 @@ export function getPreparedPalette(id: string): PreparedBeadPalette {
   const prepared: PreparedBeadPalette = {
     ...palette,
     colors: palette.colors
-      .filter((color) => color.available !== false && (color.material ?? 'normal') === 'normal')
+      .filter(
+        (color) =>
+          color.available !== false &&
+          (color.material ?? 'normal') === 'normal' &&
+          !color.deprecated
+      )
       .map((color) => ({
         ...color,
-        prepared: prepareColor(color.rgb),
+        // Use calibratedRGB when available (L2), otherwise fall back to
+        // the official digital RGB (L0/L1).
+        prepared: prepareColor(color.calibratedRGB ?? color.rgb),
       })),
   };
 

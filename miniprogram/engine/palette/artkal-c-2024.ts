@@ -49,9 +49,12 @@ export const ARTKAL_C_2024: BeadPalette = {
     code,
     name: code,
     rgb: { r, g, b },
-    material: 'normal',
+    // CE-series are multi-color/gradient beads — marked as 'other' so the
+    // default matcher (which only picks 'normal') excludes them.
+    material: code.startsWith('CE') ? 'other' : 'normal',
     available: true,
     confidence: 'official-digital',
+    source: 'official-chart',
   })),
   excluded: [
     {
@@ -68,5 +71,9 @@ export const ARTKAL_C_2024: BeadPalette = {
   notes: [
     'Official digital RGB values are reference values, not physical color calibration.',
     'The official chart itself warns that display colors may differ from real bead colors.',
+    'L0: data transcribed from official Artkal digital chart only.',
+    'L1: cross-source verification pending for high-risk codes.',
+    'L2: deferred — requires same-brand physical samples under controlled conditions (#36).',
+    'CE-series (C Exquisite) are multi-color/gradient beads, excluded from normal-photo matching by material filter.',
   ],
 };
