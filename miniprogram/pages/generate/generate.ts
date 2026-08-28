@@ -2,6 +2,7 @@ import { generatePattern } from '../../engine';
 import type { PatternResult } from '../../engine';
 import { resolvePreset } from '../../engine/preset';
 import { readImageToPixelMatrix, validatePixelMatrix } from '../../adapter/imageAdapter';
+import { ImageAdapterError } from '../../adapter/imageAdapter';
 
 type PresetId = 'easy' | 'balanced' | 'fidelity';
 
@@ -103,9 +104,16 @@ Page({
 
       wx.navigateTo({ url: '/pages/preview/preview' });
     } catch (err) {
+      let errorMsg: string;
+      if (err instanceof ImageAdapterError) {
+        // Empty message means user cancelled — don't show error.
+        errorMsg = err.message;
+      } else {
+        errorMsg = `生成失败: ${err instanceof Error ? err.message : String(err)}`;
+      }
       this.setData({
         loading: false,
-        error: `生成失败: ${err instanceof Error ? err.message : String(err)}`,
+        error: errorMsg,
       });
     }
   },
