@@ -31,6 +31,7 @@ Page({
     usedColors: [] as SwatchColor[],
     showColorPicker: false,
     canUndo: false,
+    safeAreaInsetBottom: 0,
   },
 
   _editState: { history: [], historyIndex: -1 } as EditState,
@@ -40,12 +41,29 @@ Page({
     const result = app.globalData.lastPatternResult as PatternResult | null;
     const imageSrc = (app.globalData.lastImageSrc as string | undefined) ?? '';
     if (result) {
+      // Adaptive cellSize: on small screens, reduce cellSize to fit the grid.
+      const winInfo = wx.getWindowInfo();
+      const screenWidth = winInfo.windowWidth;
+      // Target: grid should fit within ~90% of screen width with some margin.
+      const maxGridWidth = screenWidth * 0.9;
+      let cellSize = 16;
+      if (result.width * cellSize > maxGridWidth) {
+        cellSize = Math.max(6, Math.floor(maxGridWidth / result.width));
+      }
+      // Also check safe area for bottom sheet positioning.
+      const safeArea = winInfo.safeArea;
+      const safeAreaInsetBottom = safeArea
+        ? Math.max(0, winInfo.windowHeight - safeArea.bottom)
+        : 0;
+
       this.setData({
         patternResult: result,
         imageSrc,
-        canvasWidth: result.width * this.data.cellSize,
-        canvasHeight: result.height * this.data.cellSize,
+        cellSize,
+        canvasWidth: result.width * cellSize,
+        canvasHeight: result.height * cellSize,
         usedColors: this.getUsedColors(result),
+        safeAreaInsetBottom,
       });
       this._editState = {
         history: [result.grid.map((row) => row.map((cell) => ({ ...cell })))],
