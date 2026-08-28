@@ -3,6 +3,8 @@ import type { PatternResult } from '../../engine';
 import { resolvePreset } from '../../engine/preset';
 import { readImageToPixelMatrix, validatePixelMatrix } from '../../adapter/imageAdapter';
 
+type PresetId = 'easy' | 'balanced' | 'fidelity';
+
 Page({
   data: {
     imageSrc: '' as string,
@@ -10,13 +12,15 @@ Page({
     loading: false,
     error: '' as string,
     sizes: [32, 48, 64],
-    selectedSize: 32,
+    selectedSize: 48,
     presets: ['easy', 'balanced', 'fidelity'] as const,
-    selectedPreset: 'balanced' as 'easy' | 'balanced' | 'fidelity',
+    selectedPreset: 'balanced' as PresetId,
   },
 
-  onLoad() {
-    // Page loaded
+  onLoad(options: Record<string, string>) {
+    if (options.autoChoose === '1') {
+      setTimeout(() => this.onChooseImage(), 120);
+    }
   },
 
   onChooseImage() {
@@ -31,23 +35,38 @@ Page({
         }
         this.setData({ imageSrc: res.tempFiles[0].tempFilePath, error: '' });
       },
-      fail: () => {
-        this.setData({ error: '选择图片失败，请重试' });
+      fail: (err: any) => {
+        const cancelled = String(err?.errMsg ?? '').includes('cancel');
+        this.setData({ error: cancelled ? '' : '选择图片失败，请重试' });
       },
     });
   },
 
+  onSizeTap(e: any) {
+    const size = Number(e.currentTarget.dataset.size);
+    if (this.data.sizes.includes(size)) {
+      this.setData({ selectedSize: size });
+    }
+  },
+
+  onPresetTap(e: any) {
+    const preset = e.currentTarget.dataset.preset as PresetId;
+    if ((this.data.presets as readonly string[]).includes(preset)) {
+      this.setData({ selectedPreset: preset });
+    }
+  },
+
+  // Kept for compatibility with any existing picker bindings.
   onSizeChange(e: WechatMiniprogram.PickerChange) {
-    this.setData({ selectedSize: Number(e.detail.value) });
+    this.setData({ selectedSize: this.data.sizes[Number(e.detail.value)] ?? 48 });
   },
 
   onPresetChange(e: WechatMiniprogram.PickerChange) {
-    this.setData({
-      selectedPreset: this.data.presets[Number(e.detail.value)],
-    });
+    this.setData({ selectedPreset: this.data.presets[Number(e.detail.value)] });
   },
 
   async onGenerate() {
+    if (this.data.loading) return;
     if (!this.data.imageSrc) {
       this.setData({ error: '请先选择图片' });
       return;
@@ -56,15 +75,10 @@ Page({
     this.setData({ loading: true, error: '' });
 
     try {
-      // Get canvas node for image processing.
       const canvas = await this.getCanvasNode();
-
-      // Use the image adapter to read pixels (handles downsampling,
-      // orientation, and alpha).
       const pixelMatrix = await readImageToPixelMatrix(this.data.imageSrc, canvas);
       validatePixelMatrix(pixelMatrix);
 
-      // Resolve preset parameters.
       const presetParams = resolvePreset(this.data.selectedPreset);
 
       const result = generatePattern(pixelMatrix, {
@@ -82,9 +96,10 @@ Page({
 
       this.setData({ patternResult: result, loading: false });
 
-      // Store in global data for preview page.
       const app = getApp() as any;
       app.globalData.lastPatternResult = result;
+      app.globalData.lastImageSrc = this.data.imageSrc;
+      app.globalData.lastPreset = this.data.selectedPreset;
 
       wx.navigateTo({ url: '/pages/preview/preview' });
     } catch (err) {
@@ -95,9 +110,6 @@ Page({
     }
   },
 
-  /**
-   * Get the hidden canvas node via selector query.
-   */
   getCanvasNode(): Promise<any> {
     return new Promise((resolve, reject) => {
       const query = wx.createSelectorQuery();
