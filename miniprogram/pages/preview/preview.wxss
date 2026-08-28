@@ -64,7 +64,7 @@
   position: fixed; inset: 0; z-index: 100; display: flex; align-items: flex-end;
   background: rgba(45,39,35,.32); backdrop-filter: blur(6px);
 }
-.color-picker { width: 100%; max-height: 72vh; box-sizing: border-box; padding: 18rpx 28rpx 36rpx; border-radius: 36rpx 36rpx 0 0; background: #fbfaf7; }
+.color-picker { width: 100%; max-height: 72vh; box-sizing: border-box; padding: 18rpx 28rpx 36rpx; border-radius: 36rpx 36rpx 0 0; background: #fbfaf7; padding-bottom: calc(36rpx + env(safe-area-inset-bottom)); }
 .picker-handle { width: 72rpx; height: 8rpx; border-radius: 999rpx; background: #ded5cd; margin: 0 auto 22rpx; }
 .picker-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20rpx; }
 .picker-title { font-size: 31rpx; font-weight: 650; color: #312c28; }
